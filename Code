@@ -1,0 +1,492 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 17 08:28:26 2020
+@author: Angela Ku
+California Baptist University
+In-Class Exercise #8 and Assignment #4
+02.17-02.25.20
+CSC412
+@author: angel
+"""
+
+"""
+#Max Score: 240.
+#i = 5 rows
+#j = 6 columns
+
+connectFour = [[0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0]]
+"""
+
+
+connectFour = [[2, 2, 0, 1, 2, 0, 0],
+               [2, 1, 2, 2, 2, 2, 0],
+               [1, 2, 1, 1, 1, 2, 0],
+               [2, 1, 1, 2, 1, 1, 2],
+               [1, 1, 2, 1, 2, 1, 2],
+               [2, 1, 1, 1, 2, 1, 2]]
+
+
+"""This is my function kuPlay: """
+
+def kuPlay(gameBoard, playerNum):
+        
+    def evalFunc(board, piece, calculatedOpponent):   
+        score = 0; 
+        opponentPoints = 0; 
+        
+        #if this we have not calculated points for our opponent yet...
+        #confusing, but START with opponent calculations. Thus, make the piece the opponent, and vice versa
+        if not (calculatedOpponent):
+            if(piece == 1): #if our piece is one
+                piece = 2; #then our opponent will be permitted to go first
+                opponent = 1; #and we become their opponent for now
+            else: #if our piece is two
+                piece = 1; #then our opponent will be permitted to go first 
+                opponent = 2; #nd we will become theri opponent for now 
+        else:
+            if(piece == 1):
+                opponent = 2;
+            else:
+                opponent = 1; 
+
+        #if we have already calculated our Opponent, we will proceed with OUR piece.     
+            
+        #in addition to all the checking below, check for opponent blocking for 2 3 
+        #check for 2 or 3 or 4 in a row
+        for row in range(0, 6, 1):
+            if(countRow(board, row, piece)):
+                for j in range(7):
+                    if(board[row][j] == piece):
+                        if(inBounds(row,j+1) and board[row][j+1] == piece and not (inBounds(row,j-1) and board[row][j-1] == piece)):
+                            score+=1; 
+                            #print("two in a row!");
+                            if(inBounds(row, j-1) and board[row][j-1] == opponent):
+                                opponentPoints-=1;
+                            if(inBounds(row,j+2) and board[row][j+2] == opponent):
+                                opponentPoints-=1;
+                                
+                            if(inBounds(row,j+2) and board[row][j+2] == piece):
+                                score+=2.5; 
+                                #print("three in a row!");
+                                if(inBounds(row,j-1) and board[row][j-1] == opponent):
+                                    opponentPoints-=2;
+                                if(inBounds(row,j+3) and board[row][j+3] == opponent):
+                                    opponentPoints-=3;
+                                    
+                            if(inBounds(row,j+2) and inBounds(row,j+3) and board[row][j+2] == piece and board[row][j+3] == piece):
+                                score+=35; 
+                                if(inBounds(row, j-1) and board[row][j-1] == opponent):
+                                    opponentPoints+=2; 
+    
+            
+        #check for 2 or 3 or 4 in a col
+        for col in range(0, 7, 1):
+            if(countCol(board, col, piece)):                                    
+                for i in range(6):
+                    if(board[i][col] == piece):#i and col
+                        if(inBounds(i+1,col) and board[i+1][col] == piece and not (inBounds(i-1,col) and board[i-1][col] == piece)):
+                            score+=1;
+                            #print("two in a row!");
+                            if(inBounds(i-1, col) and board[i-1][col] == opponent):
+                                opponentPoints-=1;
+                            if(inBounds(i+2,col) and board[i+2][col] == opponent):
+                                opponentPoints-=1;
+                                
+                            if(inBounds(i+2,col) and board[i+2][col] == piece):
+                                score+=2.5;  
+                                #print("three in a row!");
+                                if(inBounds(i-1, col) and board[i-1][col] == opponent):
+                                    opponentPoints-=2;
+                                if(inBounds(i+3,col) and board[i+3][col] == opponent):
+                                    opponentPoints-=3;
+                                    
+                            if(inBounds(i+2,col) and inBounds(i+3,col) and board[i+2][col] == piece and board[i+3][col] == piece):
+                                score+=35; 
+                                if(inBounds(i-1, col) and board[i-1][col] == opponent):
+                                    opponentPoints+=2; 
+                        
+                
+        #check for 2, 3, 4 in a diagonal, check for opponent blocking for 2 3 
+        #diag top left to bot right (going down);
+        for iterate in range(0, 3, 1):
+            row = iterate;
+            col = 0; 
+            for times in range(6 - row): 
+                if(inBounds(row, col) and board[row][col] == piece):
+                    if(inBounds(row+1,col+1) and board[row+1][col+1] == piece and not (inBounds(row-1,col-1) and board[row-1][col-1] == piece)):
+                        score+=1; 
+                        #print("two in a row!");
+                        if(inBounds(row-1, col-1) and board[row-1][col-1] == opponent):
+                            opponentPoints-=1;
+                        if(inBounds(row+2,col+2) and board[row+2][col+2] == opponent):
+                            opponentPoints-=1;
+                            
+                        if(inBounds(row+2,col+2) and board[row+2][col+2] == piece):
+                            score+=2; 
+                            #print("three in a row!");
+                            if(inBounds(row-1, col-1) and board[row-1][col-1] == opponent):
+                                opponentPoints-=2;
+                            if(inBounds(row+3,col+3) and board[row+3][col+3] == opponent):
+                                opponentPoints-=3;
+                                
+                        if(inBounds(row+2,col+2) and inBounds(row+3,col+3) and board[row+2][col+2] == piece and board[row+3][col+3] == piece):
+                            score+=35; 
+                            if(inBounds(row-1, col-1) and board[row-1][col-1] == opponent):
+                                opponentPoints+=2; 
+                col+=1;
+                row+=1; 
+        
+        #top left to bot right (going right); 
+        for iterate in range(1, 4, 1):
+            row = 0; 
+            col = iterate;
+            for times in range(6 - row): 
+                if(inBounds(row, col) and board[row][col] == piece):
+                    if(inBounds(row+1,col+1) and board[row+1][col+1] == piece and not (inBounds(row-1,col-1) and board[row-1][col-1] == piece)):
+                        score+=1; 
+                        #print("two in a row!");
+                        if(inBounds(row-1, col-1) and board[row-1][col-1] == opponent):
+                            opponentPoints-=1;
+                        if(inBounds(row+2,col+2) and board[row+2][col+2] == opponent):
+                            opponentPoints-=1;
+                            
+                        if(inBounds(row+2,col+2) and board[row+2][col+2] == piece):
+                            score+=2; 
+                            #print("three in a row!");
+                            if(inBounds(row-1, col-1) and board[row-1][col-1] == opponent):
+                                opponentPoints-=2;
+                            if(inBounds(row+3,col+3) and board[row+3][col+3] == opponent):
+                                opponentPoints-=3;
+                                
+                        if(inBounds(row+2,col+2) and inBounds(row+3,col+3) and board[row+2][col+2] == piece and board[row+3][col+3] == piece):
+                            score+=35; 
+                            if(inBounds(row-1, col-1) and board[row-1][col-1] == opponent):
+                                opponentPoints+=2; 
+                col+=1;
+                row+=1; 
+          
+        #top right to bot left (going down);
+        for iterate in range(0, 3, 1):
+            col = 6; 
+            row = iterate;
+            for times in range(6 - row):
+                if(inBounds(row, col) and board[row][col] == piece):
+                    if(inBounds(row+1,col-1) and board[row+1][col-1] == piece and not (inBounds(row-1,col+1) and board[row-1][col+1] == piece)):
+                        score+=1; 
+                        #print("two in a row!");
+                        if(inBounds(row-1, col+1) and board[row-1][col+1] == opponent):
+                            opponentPoints-=1;
+                        if(inBounds(row+2,col-2) and board[row+2][col-2] == opponent):
+                            opponentPoints-=1;
+                            
+                        if(inBounds(row+2,col-2) and board[row+2][col-2] == piece):
+                            score+=2; 
+                            #print("three in a row!");
+                            if(inBounds(row-1, col+1) and board[row-1][col+1] == opponent):
+                                opponentPoints-=2;
+                            if(inBounds(row+3,col-3) and board[row+3][col-3] == opponent):
+                                opponentPoints-=3;
+                                
+                        if(inBounds(row+2,col-2) and inBounds(row+3,col-3) and board[row+2][col-2] == piece and board[row+3][col-3] == piece):
+                            score+=35; 
+                            if(inBounds(row-1, col+1) and board[row-1][col+1] == opponent):
+                                opponentPoints+=2; 
+                col-=1;
+                row+=1; 
+                
+        #top right to bot left (going left); 
+        for iterate in range(5, 2, -1):
+            row = 0; 
+            col = iterate;
+            for times in range(col+1):
+                if(inBounds(row, col) and board[row][col] == piece):
+                    if(inBounds(row+1,col-1) and board[row+1][col-1] == piece and not (inBounds(row-1,col+1) and board[row-1][col+1] == piece)):
+                        score+=1; 
+                        #print("two in a row!");
+                        if(inBounds(row-1, col+1) and board[row-1][col+1] == opponent):
+                            opponentPoints-=1;
+                        if(inBounds(row+2,col-2) and board[row+2][col-2] == opponent):
+                            opponentPoints-=1;
+                            
+                        if(inBounds(row+2,col-2) and board[row+2][col-2] == piece):
+                            score+=2; 
+                            #print("three in a row!");
+                            if(inBounds(row-1, col+1) and board[row-1][col+1] == opponent):
+                                opponentPoints-=2;
+                            if(inBounds(row+3,col-3) and board[row+3][col-3] == opponent):
+                                opponentPoints-=3;
+                                
+                        if(inBounds(row+2,col-2) and inBounds(row+3,col-3) and board[row+2][col-2] == piece and board[row+3][col-3] == piece):
+                            score+=35; 
+                            if(inBounds(row-1, col+1) and board[row-1][col+1] == opponent):
+                                opponentPoints+=2;
+                    
+                col-=1;
+                row+=1; 
+               
+        if not calculatedOpponent: #we have JUST calculated our opponent's scores....
+            #print("i should only be going through this ONCE.");
+            theirScore = -0.7*score;
+            theirLossesOurGains = -1.3*opponentPoints;
+            opp, earned = evalFunc(board, opponent, True); #calculate OUR score - already done our opponents
+            ourGain = earned;
+            TheirGainOurLosses = 0; #opp
+            
+            #print("their score", theirScore);
+            #print("us blocking them", theirLossesOurGains);
+            #print("our gain", ourGain);
+            #print("them blocking us", TheirGainOurLosses); 
+            #print("total:", theirScore + theirLossesOurGains + ourGain); 
+            
+            #Total should be our gain PLUS theirLossesOurGains MINUS theirScore MINUS TheirGain 
+            #but they are weighted slightly differently...
+                #theirScore: should be a factor ...
+                #us blocking them: should be high IF we are blocking a nearly winning condition
+                #our gain: should be high as LONG as their gain is NOT a nearly winning condition
+                #them blocking us: NOT AS IMPORTANT
+            return TheirGainOurLosses+theirScore, ourGain+theirLossesOurGains; 
+
+        return opponentPoints, score; 
+                
+    def countRow(board, row, piece):
+        count = 0; 
+        for j in range(0,7,1):
+            if(board[row][j] == piece):
+                count+=1;
+        return count; 
+                
+    def countCol(board, col, piece):
+        count = 0; 
+        for i in range(0,6,1):
+            if(board[i][col] == piece):
+                count+=1;
+        return count; 
+    
+    def inBounds(row, col):
+        if row > -1 and row < 6 and col > -1 and col < 7:
+            return True;
+        else:
+            return False; 
+        
+    def validCols(giveBoard):
+        #printBoard(giveBoard); 
+        validCols = [];         
+        for j in range(0, 7, 1):
+            if giveBoard[0][j] == 0:
+                validCols.append(j); 
+        return validCols;
+    
+    def validRows(giveBoard, curCol):
+        for i in range(5, -1, -1):
+            if (giveBoard[i][curCol] == 0 and (not inBounds(i+1, curCol) or not giveBoard[i+1][curCol] == 0)):
+                #print("returning row", i); 
+                return i;   
+        #return 0; 
+    
+    def terminal(giveBoard):
+        if len(validCols(giveBoard)) == 0:
+            return True; 
+        if winningState(giveBoard, 1) or winningState(giveBoard, 2):
+            return True; 
+        return False;
+    
+    def winningState(board, piece):
+        
+        for row in range(0, 6, 1):
+            if(countRow(board, row, piece)):
+                for j in range(6):
+                    if(board[row][j] == piece and inBounds(row, j+1) and board[row][j+1] == piece):
+                        if(inBounds(row,j+2) and inBounds(row,j+3) and board[row][j+2] == piece and board[row][j+3] == piece):
+                            return True; 
+    
+        for col in range(0, 7, 1):
+            if(countCol(board, col, piece)):                                    
+                for i in range(6):
+                    if(board[i][col] == piece and inBounds(i+1, col) and board[i+1][col] == piece):
+                        if(inBounds(i+2,col) and inBounds(i+3,col) and board[i+2][col] == piece and board[i+3][col] == piece):
+                            return True;
+                        
+        #diag top left to bot right (going down);
+        for iterate in range(0, 3, 1):
+            row = iterate;
+            col = 0; 
+            for times in range(6 - row): 
+                if(inBounds(row, col) and board[row][col] == piece and inBounds(row+1, col+1) and board[row+1][col+1] == piece):
+                    if(inBounds(row+2,col+2) and inBounds(row+3,col+3) and board[row+2][col+2] == piece and board[row+3][col+3] == piece):
+                        return True; 
+                
+                col+=1;
+                row+=1; 
+        
+        #top left to bot right (going right); 
+        for iterate in range(1, 4, 1):
+            row = 0; 
+            col = iterate;
+            for times in range(6 - row): 
+                if(inBounds(row, col) and board[row][col] == piece and inBounds(row+1, col+1) and board[row+1][col+1] == piece):
+                    if(inBounds(row+2,col+2) and inBounds(row+3,col+3) and board[row+2][col+2] == piece and board[row+3][col+3] == piece):
+                        return True; 
+                col+=1;
+                row+=1; 
+        
+        #top right to bot left (going down);
+        for iterate in range(0, 3, 1):
+            col = 6; 
+            row = iterate;
+            for times in range(6 - row):
+                if(inBounds(row, col) and board[row][col] == piece and inBounds(row+1, col-1) and board[row+1][col-1] == piece):
+                    if(inBounds(row+2,col-2) and inBounds(row+3,col-3) and board[row+2][col-2] == piece and board[row+3][col-3] == piece):
+                        return True; 
+                col-=1;
+                row+=1; 
+        
+                    
+        #top right to bot left (going left); 
+        for iterate in range(5, 2, -1):
+            row = 0; 
+            col = iterate;
+            for times in range(col+1):
+                if(inBounds(row, col) and board[row][col] == piece and inBounds(row+1, col-1) and board[row][col] == piece):
+                    if(inBounds(row+2,col-2) and inBounds(row+3,col-3) and board[row+2][col-2] == piece and board[row+3][col-3] == piece):
+                        return True; 
+                col-=1;
+                row+=1; 
+                
+        return False; 
+                    
+                        
+    def printBoard(board):
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                print(board[i][j], end = " ");
+            print(); 
+        print(); 
+
+    def minimax(board, depth, maximizingPlayer):
+        if(maximizingPlayer):
+            numPlayer = 1;
+        else:
+            numPlayer = 2; 
+            
+        #if depth == 0 or terminal(board):
+        if depth == 0 or terminal(board):
+            if(maximizingPlayer):
+                numPlayer = 2;
+            else:
+                numPlayer = 1; 
+            opp, earned = evalFunc(board, numPlayer, False); 
+            myEvalue = opp+earned;             
+            return myEvalue, board; 
+
+        storeBoardOne = {};
+        storeBoardTwo = {}; 
+        totalBoard = {}; 
+                
+        indexOne = 0; 
+        indexTwo = 0; 
+        indexBoard = 0; 
+ 
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                if(board[i][j] == 1):
+                    storeBoardOne[indexOne] = (i,j);
+                    indexOne+=1; 
+                if(board[i][j] == 2):
+                    storeBoardTwo[indexTwo] = (i,j); 
+                    indexTwo+=1; 
+           
+        for columns in validCols(board):
+            template = [[0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0],
+                       [0, 0, 0, 0, 0, 0, 0]]
+        
+            for i in range(len(storeBoardOne)):    
+                x = storeBoardOne[i][0];
+                y = storeBoardOne[i][1]; 
+                template[x][y] = 1; 
+            for j in range(len(storeBoardTwo)):    
+                x = storeBoardTwo[j][0];
+                y = storeBoardTwo[j][1]; 
+                template[x][y] = 2;           
+            
+            makeChild = template;
+            makeChild[validRows(makeChild, columns)][columns] = numPlayer;
+            totalBoard[indexBoard] = makeChild;
+            indexBoard+=1; 
+        
+        #for i in range(indexBoard):
+            #print("i in totalBoard", i); 
+            #printBoard(totalBoard[i]); 
+
+        if maximizingPlayer:
+            maxEval = float('-inf');
+            returnThis = board; 
+
+            for child in totalBoard: 
+                evalScore, ignore = minimax(totalBoard[child], depth - 1, False);
+                #maxEval = max(maxEval, evalScore);
+                if evalScore > maxEval:
+                    maxEval = evalScore; 
+                    returnThis = totalBoard[child]; 
+            #print("last", maxEval); 
+            return maxEval, returnThis;
+        
+        else:
+            minEval = float('inf');
+            returnThis = board; 
+            for child in totalBoard:
+                evalScore, ignore = minimax(totalBoard[child], depth - 1, True);
+                #minEval = min(minEval, evalScore);
+                if evalScore < minEval:
+                    minEval = evalScore; 
+                    returnThis = totalBoard[child];
+            #print("min", minEval); 
+            return minEval, returnThis; 
+
+
+    """""""""""""""""""""""""""MAIN"""""""""""""""""""""""""""
+
+    if(playerNum == 1):
+        maximizing = True;
+    else:
+        maximizing = False;
+                
+    depth = 4; 
+        
+    score, colBoard = minimax(gameBoard, depth, maximizing); 
+    #print("Minimax:", score);
+    #print("Minimax Board"); 
+    #printBoard(colBoard); 
+    
+    ourCol = 3; 
+    
+    for i in range(0, 6, 1):
+        for j in range(0, 7, 1):
+            if not colBoard[i][j] == gameBoard[i][j]:
+                ourCol = j; 
+    
+    #make sure to check that the column is not full. Column can only be 0-6
+    return ourCol; 
+    """            
+    
+    opp, earned = evalFunc(gameBoard, playerNum, False); 
+    #print("My Team:"); 
+    printBoard(gameBoard); 
+    #print("Opponent Substracting Score:", opp);
+    #print("Earned Score:", earned); 
+    #print("Disrupting:", disrupted); 
+    print("Total Points:", opp+earned); 
+    
+    return 0; 
+    """
+"""This is my main – NOT a part of the function"""
+print(); 
+print("Return int:", kuPlay(connectFour, 1)); 
