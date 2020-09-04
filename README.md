@@ -1,0 +1,4 @@
+# ConnectFourAgent
+In order to make sure everyone’s programs are compatible, here are the specifications for your function:
+
+You will write a function that will accept a two dimensional array that represents the current state of the game, and another integer which is your player number (either 1 or 2).  The two dimensional array will have 6 rows and 7 columns.  The first dimension represents rows and will be numbered 0 to 5, where 0 is the top most row.  The second dimension represents columns and will be number 0 to 6, where 0 is the left most column.  This configuration will represent a standard Connect Four game board.  A ‘0’ in any cell means that there is no checker in the cell.  A ‘1’ in any cell means that player 1 has a checker in that cell.  A ‘2’ in any cell means that player 2 has a checker in that cell.  Return an integer from 0 to 6 that will determine the column in which you are placing your checker for your turn.  (it will not return the score).
